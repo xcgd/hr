@@ -55,6 +55,10 @@ class HrEmployee(models.Model):
 
     @api.model
     def create(self, vals):
+        if vals.get('user_id'):
+            user = self.env['res.users'].browse(vals['user_id'])
+            vals['name'] = vals.get('name', user.name)
+
         self._prepare_vals_on_create_firstname_lastname(vals)
         res = super().create(vals)
         if self._is_partner_firstname_installed():
