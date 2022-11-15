@@ -71,14 +71,16 @@ class HrEmployee(models.Model):
         return res
 
     def _prepare_vals_on_create_firstname_lastname(self, vals):
+
         if vals.get("firstname") or vals.get("lastname"):
             vals["name"] = self._get_name(vals.get("lastname"), vals.get("firstname"))
         elif vals.get("name"):
             vals["lastname"] = self.split_name(vals["name"])["lastname"]
             vals["firstname"] = self.split_name(vals["name"])["firstname"]
         elif vals.get('user_id'):
-            user = self.env['res.users'].browse(vals['user_id'])
-            vals['name'] = vals.get('name', user.name)
+            vals['name'] = self.env['res.users'].browse(vals['user_id']).name
+            vals["lastname"] = self.split_name(vals["name"])["lastname"]
+            vals["firstname"] = self.split_name(vals["name"])["firstname"]
         else:
             raise ValidationError(_("No name set."))
 
